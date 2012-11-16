@@ -1,4 +1,5 @@
 {% load thumbnail %}
+{% load l10n %}
 
 <script type="text/javascript" language="javascript" charset="utf-8">
 // <![CDATA[
@@ -7,7 +8,8 @@
         var jcrop_api, boundx, boundy;
         function crop() {
           $('#jcrop_target_{{ input_name }}').Jcrop({
-                aspectRatio: 0,
+                {% if aspect_ratio %}aspectRatio: {{ aspect_ratio|unlocalize }},{% endif %}
+                {% if min_size %}minSize: {{ min_size }},{% endif %}		
                 onChange: update_input,
                 onSelect: update_input
           }, function(){
@@ -51,21 +53,25 @@
 </script>
 
 <p class="file-upload">
-    Atualmente:
+    Obecna wersja:
     <a href="{{ image_url }}">{{ image_url }}</a>
     <br />
-    <img src="{% thumbnail image_value JCROP_IMAGE_THUMBNAIL_DIMENSIONS %}" id="jcrop_preview_{{ input_name }}" />
+    {% thumbnail image_value JCROP_IMAGE_THUMBNAIL_DIMENSIONS as thumbnail %}    
+    <img src="{{ thumbnail.url }}" id="jcrop_preview_{{ input_name }}" />
+  {% endthumbnail %}    
     <span class="clearable-file-input">
         {{ clear }}
         <label for="{{ clear_checkbox_id }}">{{ clear_checkbox_label }}</label>
     </span>
     <span class="clearable-file-input">
         <input name="{{ input_name }}-crop" type="checkbox" id="jcrop_crop_{{ input_name }}" />
-        <label for="">Recortar</label>
+        <label for="">Przytnij</label>
     </span>
     <br />
     <span class="{{ input_name }} jcrop_panel" style="display: none">
-        <img src="{% thumbnail image_value JCROP_IMAGE_WIDGET_DIMENSIONS %}" id="jcrop_target_{{ input_name }}" />
+      {% thumbnail image_value JCROP_IMAGE_WIDGET_DIMENSIONS as thumbnail %}      
+        <img src="{{ thumbnail.url }}" id="jcrop_target_{{ input_name }}" />
+      {% endthumbnail %}	
     </span>
     <br />
     Upload:
